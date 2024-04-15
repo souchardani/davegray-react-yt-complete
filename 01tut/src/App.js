@@ -1,27 +1,27 @@
+////npx json-server -p 3500 -w data/db.json
 import Header from "./Header";
 import SearchItem from "./SearchItem";
 import AddItem from "./AddItem";
 import Content from "./Content";
 import Footer from "./Footer";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 function App() {
   const [items, setItems] = useState(
-    JSON.parse(localStorage.getItem("shoppingList"))
+    JSON.parse(localStorage.getItem("shoppingList")) || []
   );
   const [newItem, setNewItem] = useState("");
   const [search, setSearch] = useState("");
 
-  const setAndSaveitems = (newItems) => {
-    setItems(newItems);
-    localStorage.setItem("shoppingList", JSON.stringify(newItems));
-  };
+  useEffect(() => {
+    localStorage.setItem("shoppingList", JSON.stringify(items));
+  }, [items]);
 
   const handleCheck = (id) => {
     const listItems = items.map((item) =>
       item.id == id ? { ...item, checked: !item.checked } : item
     );
-    setAndSaveitems(listItems);
+    setItems(listItems);
   };
 
   const addItem = (item) => {
@@ -33,13 +33,12 @@ function App() {
       item,
     };
     const listItems = [...items, myNewItem];
-    setAndSaveitems(listItems);
+    setItems(listItems);
   };
 
   const handleDelete = (id) => {
     const listItems = items.filter((item) => item.id != id);
     setItems(listItems);
-    setAndSaveitems(listItems);
   };
 
   const handleSubmit = (e) => {
