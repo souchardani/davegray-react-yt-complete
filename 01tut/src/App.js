@@ -5,10 +5,11 @@ import AddItem from "./AddItem";
 import Content from "./Content";
 import Footer from "./Footer";
 import { useState, useEffect } from "react";
+import apiRequest from "./apiRequest";
 
 function App() {
   const API_URL =
-    "https://davegrayreactytcomplete-3clk--8080--7dbe22a9.local-credentialless.webcontainer.io/items";
+    "https://basic-restapi-node-express.onrender.com/items";
   const [items, setItems] = useState(
     JSON.parse(localStorage.getItem("shoppingList")) || []
   );
@@ -23,7 +24,6 @@ function App() {
         const response = await fetch(API_URL);
         if (!response.ok) throw Error("Did not receive Expected Data");
         let listItems = await response.json();
-        listItems = listItems.items;
         setItems(listItems);
         setFetchError(null);
       } catch (err) {
@@ -32,19 +32,29 @@ function App() {
         setIsLoading(false);
       }
     };
-    setTimeout(() => {
-      (async () => await fetchItems())();
-    }, 2000);
+    (() =>  fetchItems())();
   }, []);
 
-  const handleCheck = (id) => {
+  const handleCheck = async (id) => {
     const listItems = items.map((item) =>
       item.id == id ? { ...item, checked: !item.checked } : item
     );
     setItems(listItems);
+
+    const myItem = listItems.filter((item) => item.id == id);
+    const updateOptions = {
+      method: "PATCH",
+      headers: {
+        "Content-type": "application/json",
+      },
+      body: JSON.stringify({checked: myItem[0].checked}),
+    }
+    const reqUrl = `${API_URL}/${id}`;
+    const result = await apiRequest(reqUrl, updateOptions);
+    if (result) setFetchError(result);
   };
 
-  const addItem = (item) => {
+  const addItem = async (item) => {
     //si hay items, el id es el ultimo +1, si no es 1
     const id = items.length ? items[items.length - 1].id + 1 : 1;
     const myNewItem = {
@@ -54,11 +64,31 @@ function App() {
     };
     const listItems = [...items, myNewItem];
     setItems(listItems);
+
+    const postOptions = {
+      method: "POST",
+      headers: {
+        "Content-type": "application/json",
+      },
+      body: JSON.stringify(myNewItem),
+    };
+    const result = await apiRequest(API_URL, postOptions);
+    if (result) setFetchError(result);
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
+    //const itemDelete = listItems.filter((item) => item.id == id);
     const listItems = items.filter((item) => item.id != id);
     setItems(listItems);
+    const deleteOptions ={
+      method: "DELETE",
+      headers: {
+        "Content-type": "application/json",
+      },
+    }
+    const reqUrl = `${API_URL}/${id}`;
+    const result = await apiRequest(reqUrl, deleteOptions);
+    if (result) setFetchError(result);
   };
 
   const handleSubmit = (e) => {
