@@ -1,0 +1,10 @@
+button {
+  cursor: pointer;
+  flex-grow: 1;
+}
+
+.button-list {
+  display: flex;
+  margin: 10px;
+  gap: 20px;
+}

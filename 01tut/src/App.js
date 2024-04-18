@@ -8,8 +8,7 @@ import { useState, useEffect } from "react";
 import apiRequest from "./apiRequest";
 
 function App() {
-  const API_URL =
-    "https://basic-restapi-node-express.onrender.com/items";
+  const API_URL = "http://localhost:5000/items";
   const [items, setItems] = useState(
     JSON.parse(localStorage.getItem("shoppingList")) || []
   );
@@ -32,7 +31,7 @@ function App() {
         setIsLoading(false);
       }
     };
-    (() =>  fetchItems())();
+    (() => fetchItems())();
   }, []);
 
   const handleCheck = async (id) => {
@@ -47,8 +46,8 @@ function App() {
       headers: {
         "Content-type": "application/json",
       },
-      body: JSON.stringify({checked: myItem[0].checked}),
-    }
+      body: JSON.stringify({ checked: myItem[0].checked }),
+    };
     const reqUrl = `${API_URL}/${id}`;
     const result = await apiRequest(reqUrl, updateOptions);
     if (result) setFetchError(result);
@@ -80,12 +79,12 @@ function App() {
     //const itemDelete = listItems.filter((item) => item.id == id);
     const listItems = items.filter((item) => item.id != id);
     setItems(listItems);
-    const deleteOptions ={
+    const deleteOptions = {
       method: "DELETE",
       headers: {
         "Content-type": "application/json",
       },
-    }
+    };
     const reqUrl = `${API_URL}/${id}`;
     const result = await apiRequest(reqUrl, deleteOptions);
     if (result) setFetchError(result);
