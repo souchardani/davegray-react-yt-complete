@@ -1,7 +1,9 @@
-const Nav = () => {
+const Nav = ({search, setSearch}) => {
     return (
-        <nav>
-            <h1>Nav</h1>
+        <nav className="nav">
+            <form className="searchForm" onSubmit={(e) => e.preventDefault()}>
+                <label htmlFor="search">Search Post</label>
+            </form>
         </nav>
     )
 }
